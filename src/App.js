@@ -1,13 +1,16 @@
 
-import './App.css';
-
+// import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import { Archive } from './pages/Archive';
 function App() {
   return (
-    <>
-       <h1 className="text-3xl font-bold underline text-blue-500 text-center">
-      Tailwind is Working 🎉
-    </h1>
-    </>
+    <div className="App">
+      <Routes>
+        <Route path="/" element={ <Home /> } />
+        <Route path='/archive' element={ <Archive /> } /> 
+      </Routes>
+    </div>
   );
 }
 
