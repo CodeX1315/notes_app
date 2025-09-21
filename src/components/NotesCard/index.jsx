@@ -1,10 +1,13 @@
 import { useNotes } from "../../context/notes-context";
-import { findNoteInArchive } from "../../utils/findNoteInArchive";
+import { findNoteInArchive, findNoteInBin } from "../../utils/findNoteInArchive";
 
 export const NotesCard = ({ id, title, text, isPinned }) => {
-  const { noteDispatch, archive } = useNotes();
+  const { noteDispatch, archive, bin } = useNotes();
 
   const isNoteInaArchive = findNoteInArchive(archive, id);
+  const isNoteInBin = findNoteInBin(bin, id);
+  
+
   const onClickPin = (id) => {
     !isPinned
       ? noteDispatch({
@@ -29,6 +32,19 @@ export const NotesCard = ({ id, title, text, isPinned }) => {
         });
   };
 
+  const onBinClick = ( ) => {
+    !isNoteInBin ?
+    noteDispatch({
+        type: "ADD_TO_BIN",
+        payload: { id }
+    }) : 
+    noteDispatch({
+        type: "REMOVE_FROM_BIN",
+        payload: { id }
+    })
+  }
+
+
   return (
     <div
       key={id}
@@ -36,7 +52,7 @@ export const NotesCard = ({ id, title, text, isPinned }) => {
     >
       <div className="flex justify-between border-2 border-pink-300 p-2 rounded-lg">
         <p>{title}</p>
-        {!isNoteInaArchive ? (
+        {!(isNoteInaArchive || isNoteInBin )  ? (
           <button onClick={() => onClickPin(id)} className="w-[30px] h-[30px]">
             <span
               className={
@@ -50,7 +66,9 @@ export const NotesCard = ({ id, title, text, isPinned }) => {
       </div>
       <div className="flex justify-between border-2 border-pink-300 p-2 rounded-lg relative">
         <p className="whitespace-pre-line">{text}</p>
-        <button
+        {
+          !isNoteInBin ? (
+            <button
           onClick={() => onArchiveClick(id)}
           className="w-[30px] h-[30px]  right-10 absolute mt-[2px]"
         >
@@ -62,9 +80,21 @@ export const NotesCard = ({ id, title, text, isPinned }) => {
             archive
           </span>
         </button>
-        <button className="w-[30px] h-[30px]  p-[2px]">
-          <span className="material-icons-outlined">delete</span>
+          ) : null
+        }
+        {
+          !isNoteInBin ? (
+            <button 
+            onClick={ () => onBinClick(id) }
+            className="w-[30px] h-[30px]  p-[2px]">
+          <span className={isNoteInBin ? "material-icons":"material-icons-outlined"}>delete</span>
         </button>
+          ) : <button 
+            onClick={ () => onBinClick(id) }
+            className="w-[30px] h-[30px]  p-[2px]">
+          <span className={isNoteInBin ? "material-icons":"material-icons-outlined"}>cached</span>
+        </button>
+        }
       </div>
     </div>
   );
